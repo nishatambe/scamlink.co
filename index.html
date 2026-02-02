@@ -1,0 +1,450 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Ashu will you be my Valentine?</title>
+  <meta name="description" content="Ashu — Will you be my Valentine? A playful interactive Valentine card." />
+
+  <!-- Open Graph / Social -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Ashu will you be my Valentine?" />
+  <meta property="og:description" content="A playful interactive Valentine card. Click YES and celebrate!" />
+  <meta property="og:image" content="OG_IMAGE_URL" />
+  <meta property="og:site_name" content="Ashu Valentine" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Ashu will you be my Valentine?" />
+  <meta name="twitter:description" content="A playful interactive Valentine card. Click YES and celebrate!" />
+  <meta name="twitter:image" content="OG_IMAGE_URL" />
+
+  <!-- Theme color -->
+  <meta name="theme-color" content="#ffc0d9" />
+
+  <!-- Tiny SVG favicon (heart) -->
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23ff6b9d' d='M12 21s-7-4.9-9.2-8.1C-0.2 7.9 4.2 4 7.8 6.6 9.7 8 12 10 12 10s2.3-2 4.2-3.4C19.8 4 24.2 7.9 21.2 12.9 19 16.1 12 21 12 21z'/%3E%3C/svg%3E" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #ffeef8 0%, #ffd6e8 50%, #ffc0d9 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      overflow-x: hidden;
+    }
+
+    .container {
+      background: rgba(255,255,255,0.95);
+      border-radius: 30px;
+      padding: 50px 40px;
+      max-width: 500px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(255,105,180,0.2);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .profile-image {
+      width: 200px; height: 200px; border-radius: 50%; object-fit: cover;
+      border: 5px solid #ff6b9d; box-shadow: 0 10px 30px rgba(255,107,157,0.3);
+      margin-bottom: 20px; animation: bounce 2s ease-in-out infinite;
+    }
+
+    @keyframes bounce {
+      0%,100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-10px) scale(1.05); }
+    }
+
+    .main-text {
+      font-family: 'Dancing Script', cursive;
+      font-size: 42px; font-weight:700; color:#d63384; margin-bottom:18px; line-height:1.2; transition: all 0.5s ease;
+    }
+
+    .subline {
+      font-size: 14px; color: #7a2b4c; margin-bottom: 8px;
+    }
+
+    .button-container {
+      display:flex; gap:20px; justify-content:center; align-items:center; flex-wrap:wrap; margin-top:16px;
+      position: relative;
+      min-height: 64px;
+    }
+
+    .btn {
+      padding: 14px 34px; border: none; border-radius: 50px; font-size: 16px; font-weight:600;
+      cursor: pointer; transition: all 0.3s ease; font-family: 'Poppins', sans-serif; position: relative; overflow: hidden;
+      user-select: none;
+    }
+
+    .btn-yes {
+      background: linear-gradient(135deg, #ff6b9d 0%, #ffc0d9 100%); color: white;
+      box-shadow: 0 8px 20px rgba(255,107,157,0.3); min-width:140px;
+    }
+    .btn-yes:hover { transform: translateY(-3px) scale(1.03); box-shadow: 0 12px 30px rgba(255,107,157,0.4); }
+    .btn-yes:active { transform: translateY(-1px) scale(1.02); }
+
+    .btn-no {
+      background: linear-gradient(135deg, #666 0%, #888 100%); color: #fff;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      position: absolute; /* inside container */
+      font-size: 16px; padding: 12px 28px; transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
+      z-index: 10; display: block; visibility: visible; font-weight: 600;
+      cursor: pointer; touch-action: manipulation;
+    }
+    .btn-no.unlocked { background: linear-gradient(135deg,#bdbdbd 0%, #e0e0e0 100%); color:#222; }
+
+    .share-note {
+      margin-top: 14px;
+      font-size: 13px;
+      color: #6b2b4a;
+    }
+
+    .celebration {
+      position: fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:1000;
+    }
+    .heart { position:absolute; font-size:30px; animation: float 3s ease-out forwards; opacity:0; }
+    @keyframes float { 0% { opacity:1; transform:translateY(0) rotate(0deg);} 100% { opacity:0; transform:translateY(-100vh) rotate(360deg);} }
+
+    .confetti { position:absolute; width:10px; height:10px; background:#ff6b9d; animation: confetti-fall 2s ease-out forwards; }
+    @keyframes confetti-fall { 0% { opacity:1; transform:translateY(0) rotate(0deg);} 100% { opacity:0; transform:translateY(100vh) rotate(720deg);} }
+
+    .toast {
+      position: fixed; left: 50%; transform: translateX(-50%); bottom: 28px;
+      background: rgba(0,0,0,0.8); color: #fff; padding: 8px 14px; border-radius: 20px; font-size: 13px;
+      z-index: 2000; display:none;
+    }
+
+    @media (max-width:600px) {
+      .container { padding:40px 24px; }
+      .main-text { font-size:36px; }
+      .btn { padding:12px 28px; font-size:15px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="card" aria-live="polite">
+    <!-- Replace the src below with your image URL or filename -->
+    <img src="YOUR_IMAGE_URL_OR_FILENAME_HERE" alt="Profile" class="profile-image" id="profileImage" onerror="this.style.display='none'">
+
+    <div class="main-text" id="mainText">Ashu will you be my Valentine?</div>
+    <div class="subline">A little question — made with 💖</div>
+
+    <div class="button-container" id="buttonContainer" aria-hidden="false">
+      <button class="btn btn-yes" id="yesBtn" type="button">YES</button>
+    </div>
+
+    <!-- NO is absolutely positioned inside .container -->
+    <button class="btn btn-no" id="noBtn" type="button" aria-label="No — playful moving button">NO</button>
+
+    <div class="share-note" id="shareNote">Tip: use the Share button (below) to send this page.</div>
+
+    <div style="margin-top: 14px;">
+      <button class="btn" id="shareBtn" type="button" aria-label="Share this page">Share</button>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    (function () {
+      const pageTitle = document.title;
+      const pageUrl = location.href;
+
+      // Share UI
+      const shareBtn = document.getElementById('shareBtn');
+      const toast = document.getElementById('toast');
+      function showToast(msg, ms = 1800) {
+        toast.textContent = msg;
+        toast.style.display = 'block';
+        clearTimeout(toast._t);
+        toast._t = setTimeout(() => toast.style.display = 'none', ms);
+      }
+
+      shareBtn.addEventListener('click', async function () {
+        const shareData = {
+          title: pageTitle,
+          text: 'A playful Valentine card — check it out!',
+          url: pageUrl
+        };
+        if (navigator.share) {
+          try {
+            await navigator.share(shareData);
+          } catch (err) {
+            // user cancelled or not supported
+          }
+        } else if (navigator.clipboard) {
+          try {
+            await navigator.clipboard.writeText(pageUrl);
+            showToast('Link copied to clipboard');
+          } catch (err) {
+            showToast('Copy failed — select and copy the URL manually');
+          }
+        } else {
+          // Fallback: open prompt
+          prompt('Copy this link to share:', pageUrl);
+        }
+      });
+
+      // --- Playful NO button logic (keeps accessibility and escape hatch) ---
+      const card = document.getElementById('card');
+      const yesBtn = document.getElementById('yesBtn');
+      const noBtn = document.getElementById('noBtn');
+      const mainText = document.getElementById('mainText');
+
+      // Config
+      const DISTANCE_THRESHOLD = 120;
+      const SAFE_DISTANCE = 150;
+      const PADDING = 12;
+      const MOVE_THROTTLE_MS = 80;
+      const MAX_MOVE_ATTEMPTS = 20;
+      const MAX_MOVES_BEFORE_RELEASE = 12;
+
+      let lastMoveAt = 0;
+      let moveCount = 0;
+      let unlocked = false;
+      let pendingAnimationFrame = false;
+
+      noBtn.style.position = 'absolute';
+      noBtn.style.left = noBtn.style.left || '50%';
+      noBtn.style.top = noBtn.style.top || '50%';
+      noBtn.setAttribute('tabindex', '0');
+
+      function getRects() {
+        const cardRect = card.getBoundingClientRect();
+        const btnRect = noBtn.getBoundingClientRect();
+        return { cardRect, btnRect };
+      }
+
+      function findSafePosition(pointerX, pointerY) {
+        const { cardRect, btnRect } = getRects();
+        const btnW = btnRect.width;
+        const btnH = btnRect.height;
+
+        const maxX = Math.max(0, cardRect.width - btnW - PADDING * 2);
+        const maxY = Math.max(0, cardRect.height - btnH - PADDING * 2);
+
+        let attempts = 0;
+        while (attempts < MAX_MOVE_ATTEMPTS) {
+          const x = Math.round(Math.random() * maxX) + PADDING;
+          const y = Math.round(Math.random() * maxY) + PADDING;
+
+          const centerX = cardRect.left + x + btnW / 2;
+          const centerY = cardRect.top + y + btnH / 2;
+
+          const dist = Math.hypot(pointerX - centerX, pointerY - centerY);
+          if (dist >= SAFE_DISTANCE || attempts > (MAX_MOVE_ATTEMPTS - 3)) {
+            return { x, y };
+          }
+          attempts++;
+        }
+
+        return {
+          x: Math.min(Math.max(PADDING, (maxX / 2)), maxX + PADDING),
+          y: Math.min(Math.max(PADDING, (maxY / 2)), maxY + PADDING)
+        };
+      }
+
+      function moveNoButton(pointerX = null, pointerY = null) {
+        if (unlocked) return;
+        moveCount++;
+
+        const { cardRect, btnRect } = getRects();
+        let newPos;
+        if (pointerX !== null && pointerY !== null) {
+          newPos = findSafePosition(pointerX, pointerY);
+        } else {
+          newPos = findSafePosition(cardRect.left + cardRect.width/2, cardRect.top + cardRect.height/2);
+        }
+
+        const currentLeft = (parseFloat(noBtn.style.left) || btnRect.left - cardRect.left);
+        const currentTop = (parseFloat(noBtn.style.top) || btnRect.top - cardRect.top);
+
+        const dx = newPos.x - currentLeft;
+        const dy = newPos.y - currentTop;
+
+        noBtn.style.transition = 'transform 160ms ease';
+        noBtn.style.transform = `translate3d(${dx}px, ${dy}px, 0)`;
+
+        window.setTimeout(() => {
+          noBtn.style.transition = '';
+          noBtn.style.transform = '';
+          noBtn.style.left = newPos.x + 'px';
+          noBtn.style.top = newPos.y + 'px';
+        }, 180);
+
+        if (moveCount >= MAX_MOVES_BEFORE_RELEASE) {
+          releaseNoButton();
+        }
+      }
+
+      function releaseNoButton() {
+        if (unlocked) return;
+        unlocked = true;
+        noBtn.classList.add('unlocked');
+        noBtn.textContent = 'OKAY';
+        noBtn.setAttribute('aria-label', 'No — unlocked');
+      }
+
+      function onCardPointerMove(e) {
+        if (unlocked) return;
+        const now = Date.now();
+        if (now - lastMoveAt < MOVE_THROTTLE_MS) return;
+        lastMoveAt = now;
+
+        if (pendingAnimationFrame) return;
+        pendingAnimationFrame = true;
+        const evt = e;
+        requestAnimationFrame(() => {
+          pendingAnimationFrame = false;
+          const { btnRect } = getRects();
+
+          const btnCenterX = btnRect.left + btnRect.width / 2;
+          const btnCenterY = btnRect.top + btnRect.height / 2;
+          const dist = Math.hypot(evt.clientX - btnCenterX, evt.clientY - btnCenterY);
+
+          if (dist < DISTANCE_THRESHOLD) {
+            moveNoButton(evt.clientX, evt.clientY);
+          }
+        });
+      }
+
+      noBtn.addEventListener('pointerdown', function (e) {
+        if (unlocked) return;
+        e.preventDefault();
+        e.stopPropagation();
+        moveNoButton(e.clientX, e.clientY);
+      }, { passive: false });
+
+      noBtn.addEventListener('click', function (e) {
+        if (!unlocked) {
+          e.preventDefault();
+          e.stopPropagation();
+          return;
+        }
+        mainText.textContent = "Okay... maybe next time 💜";
+        yesBtn.style.display = 'none';
+        noBtn.style.display = 'none';
+      });
+
+      noBtn.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          if (!unlocked) {
+            const centerX = card.getBoundingClientRect().left + card.getBoundingClientRect().width / 2;
+            const centerY = card.getBoundingClientRect().top + card.getBoundingClientRect().height / 2;
+            moveNoButton(centerX, centerY);
+          } else {
+            noBtn.click();
+          }
+        }
+      });
+
+      function initializeNoButton() {
+        const { cardRect, btnRect } = getRects();
+        if (btnRect.width === 0 || btnRect.height === 0) return;
+        const buttonContainer = document.getElementById('buttonContainer');
+        const containerRect = buttonContainer.getBoundingClientRect();
+        const leftPos = Math.max(PADDING, (cardRect.width - btnRect.width) / 2);
+        const topPos = Math.max(PADDING, (containerRect.top - cardRect.top + (containerRect.height / 2) - (btnRect.height / 2)));
+        noBtn.style.left = leftPos + 'px';
+        noBtn.style.top = topPos + 'px';
+      }
+
+      let celebrationStarted = false;
+      yesBtn.addEventListener('click', function () {
+        if (celebrationStarted) return;
+        celebrationStarted = true;
+
+        const celebrationDiv = document.createElement('div');
+        celebrationDiv.className = 'celebration-content';
+        celebrationDiv.innerHTML = `
+          <div class="main-text" style="font-size:42px; color:#d63384; margin-bottom:20px;">
+            I knew you'd say yes
+          </div>
+          <div class="celebration-hearts">
+            <span style="--i:0">💖</span>
+            <span style="--i:1">💕</span>
+            <span style="--i:2">💗</span>
+            <span style="--i:3">💓</span>
+          </div>
+          <img src="YOUR_DOG_GIF_URL_OR_FILENAME_HERE" alt="Celebration" class="celebration-gif" onerror="this.style.display='none'">
+        `;
+
+        mainText.innerHTML = '';
+        mainText.appendChild(celebrationDiv);
+        mainText.style.transform = 'scale(1.1)';
+
+        yesBtn.style.display = 'none';
+        noBtn.style.display = 'none';
+
+        createCelebration();
+      });
+
+      function createCelebration() {
+        const celebration = document.createElement('div');
+        celebration.className = 'celebration';
+        document.body.appendChild(celebration);
+
+        for (let i = 0; i < 30; i++) {
+          setTimeout(() => {
+            const heart = document.createElement('div');
+            heart.className = 'heart';
+            heart.textContent = ['💖','💕','💗','💓','💝'][Math.floor(Math.random()*5)];
+            heart.style.left = Math.random() * 100 + '%';
+            heart.style.animationDelay = Math.random() * 0.5 + 's';
+            celebration.appendChild(heart);
+            setTimeout(() => heart.remove(), 3000);
+          }, i * 80);
+        }
+
+        for (let i = 0; i < 50; i++) {
+          setTimeout(() => {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti';
+            confetti.style.left = Math.random() * 100 + '%';
+            confetti.style.backgroundColor = ['#ff6b9d','#ffc0d9','#ff9ec5','#ffb3d1'][Math.floor(Math.random()*4)];
+            confetti.style.animationDelay = Math.random() * 0.3 + 's';
+            celebration.appendChild(confetti);
+            setTimeout(() => confetti.remove(), 2000);
+          }, i * 40);
+        }
+
+        setTimeout(() => celebration.remove(), 4200);
+      }
+
+      card.addEventListener('pointermove', onCardPointerMove, { passive: true });
+
+      window.addEventListener('resize', () => {
+        const { cardRect, btnRect } = getRects();
+        if (btnRect.width === 0) return;
+        const left = parseFloat(noBtn.style.left) || (btnRect.left - cardRect.left);
+        const top = parseFloat(noBtn.style.top) || (btnRect.top - cardRect.top);
+        const maxLeft = Math.max(PADDING, cardRect.width - btnRect.width - PADDING);
+        const maxTop = Math.max(PADDING, cardRect.height - btnRect.height - PADDING);
+        noBtn.style.left = Math.min(Math.max(left, PADDING), maxLeft) + 'px';
+        noBtn.style.top  = Math.min(Math.max(top, PADDING), maxTop) + 'px';
+      });
+
+      initializeNoButton();
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initializeNoButton);
+      }
+      setTimeout(initializeNoButton, 50);
+      setTimeout(initializeNoButton, 200);
+      setTimeout(initializeNoButton, 500);
+
+    })();
+  </script>
+</body>
+</html>
